@@ -6,7 +6,7 @@ url = f'https://viacep.com.br/ws/{cep}/json/'
 response = rq.get(url)
 dados = response.json()
 
-print(dados)
+# print(dados)
 
 #print(consultar_cep(81130040))
 
