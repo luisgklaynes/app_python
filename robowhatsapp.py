@@ -16,19 +16,24 @@ navegador.get("https://web.whatsapp.com/")
 while len(navegador.find_elements(By.CLASS_NAME,'_ai05')) < 1:
     time.sleep(1) 
     print(navegador.find_elements(By.CLASS_NAME,'_ai05'))
-
+                                   
 
 for i, mensagem in enumerate(contatos_df['Mensagem']):
     pessoa = contatos_df.loc[i,"Nome"]
     numero = contatos_df.loc[i,"Telefone"]
-    mensagem_formatada = urllib.parse.quote(f"Oi {pessoa}! {mensagem}")
+    mensagem_formatada = urllib.parse.quote(f"Boa tarde{pessoa}! {mensagem}")
+    print(mensagem_formatada)
+
     link = f"https://web.whatsapp.com/send?phone={numero}&text={mensagem_formatada}"
     navegador.get(link)
-    print(link)
 
-    # while len(navegador.find_elements(By.CLASS_NAME,'_ai05')) < 1:
-    #     time.sleep(1) 
+    loop = 0
+    while loop < 20 and len(navegador.find_elements(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]')) < 1:
+        time.sleep(1)
+        loop +=1 
 
     elemento = navegador.find_element(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]')
-    elemento.send_keys(Keys.RETURN)
+    elemento.send_keys(Keys.ENTER)
+    time.sleep(15)
+
     
