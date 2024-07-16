@@ -21,7 +21,7 @@ while len(navegador.find_elements(By.CLASS_NAME,'_ai05')) < 1:
 for i, mensagem in enumerate(contatos_df['Mensagem']):
     pessoa = contatos_df.loc[i,"Nome"]
     numero = contatos_df.loc[i,"Telefone"]
-    mensagem_formatada = urllib.parse.quote(f"Boa tarde{pessoa}! {mensagem}")
+    mensagem_formatada = urllib.parse.quote(f"Boa tarde {pessoa}! {mensagem}")
     print(mensagem_formatada)
 
     link = f"https://web.whatsapp.com/send?phone={numero}&text={mensagem_formatada}"
