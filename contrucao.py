@@ -91,30 +91,55 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
     file_path = 'contatosMay.xlsx'
     sheet_name = 'Planilha1'
 
+
+# ação do botão salvar
     def on_save_click(e):
-        updated_df = update_dataframe(df, mensagem_input.value, mensagem_input2.value)
-        save_to_excel(updated_df, file_path, sheet_name)
+        try:
+            updated_df = update_dataframe(df, mensagem_input.value, mensagem_input2.value)
+            save_to_excel(updated_df, file_path, sheet_name)
+            page.snack_bar = ft.SnackBar(ft.Text("Mensagens salvas com sucesso!", weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
+            bgcolor=ft.colors.GREEN_ACCENT_700)                  
+            page.snack_bar.open = True
+            page.update()
+        except Exception as save_error:
+            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao salvar mensagens!: {save_error}", weight=ft.FontWeight.BOLD), bgcolor=ft.colors.RED)
+            page.snack_bar.open = True
+            page.update()
 
-    def on_confirm_send(e):
-        confirm_dialog = ft.BottomSheet(
-            content=ft.Container(
-                padding=50,
-                content=ft.Column(
-                tight=True,
-                controls=[
-                    ft.Text("Deseja iniciar os envios?"),
-                    ft.ElevatedButton("Close bottom sheet", on_click=lambda _: page.close(confirm_dialog)),
-                ],
-            ),
-        ),
-    )
-        page.add(ft.ElevatedButton("Display bottom sheet", on_click=lambda _: page.open(confirm_dialog)))
-
+# ação do botão enviar
     def send_messages():
         # Implementar a lógica de envio das mensagens aqui
         print("Mensagens enviadas com sucesso!")
+        return
 
-    save_button = ft.ElevatedButton(text="Salvar", on_click=on_save_click)
+# modal de confirmação
+    def on_confirm_send(e):
+        #print(send_button.data)
+        confirm_dialog = ft.BottomSheet(
+            content=ft.Container(
+                padding=80,
+                content=ft.Column(
+                    tight=True,
+                    controls=[
+                        ft.Text("Deseja iniciar os envios?", weight=ft.FontWeight.BOLD),
+                        ft.ElevatedButton(
+                            "Sim", 
+                            on_click=lambda _: [
+                                page.close(confirm_dialog),
+                                send_messages()  
+                            ]
+                        ),
+                        ft.ElevatedButton(
+                            "Cancelar", 
+                            on_click=lambda _: page.close(confirm_dialog)
+                        ),
+                    ],
+                ),
+            ),
+        )
+        page.open(confirm_dialog)
+
+    save_button = ft.ElevatedButton(text="Salvar", on_click=on_save_click,)
     send_button = ft.ElevatedButton(text="Enviar", on_click=on_confirm_send)
     page.add(mensagem_input, mensagem_input2, save_button, send_button)
 
@@ -123,7 +148,45 @@ def main(page: ft.Page):
     page.window_width = 375
     page.window_height = 667
     page.bgcolor = ft.colors.BLUE_GREY_900
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER 
+    tabs = ft.Tabs(
+        selected_index=0,
+        tabs = ft.Tabs(
+            selected_index=0,
+            tabs=[
+                ft.Tab(
+                    text="Home",
+                    content=ft.Container(
+                        content=ft.Text(
+                            "Bem-vindo à página inicial!",
+                            size=18,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.WHITE
+                        ),
+                        alignment=ft.alignment.center,
+                    )
+                ),
+                ft.Tab(
+                    text="Nova Aba",
+                    content=ft.Container(
+                        content=ft.Text(
+                            "Conteúdo da nova aba",
+                            size=18,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.WHITE
+                        ),
+                        alignment=ft.alignment.center,
+                    )
+                ),
+            ],
+            indicator_color=ft.colors.LIME_ACCENT_400,
+            unselected_label_color=ft.colors.WHITE70,
+            label_color=ft.colors.LIME_ACCENT_400,
+            overlay_color=ft.colors.BLUE_GREY_800,
+        )
+    )
+    page.add(tabs)
+    page.update()
+    #page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
     # Exibe a tela de carregamento inicial
     show_loading_screen(page)
