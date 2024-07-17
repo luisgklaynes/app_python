@@ -97,20 +97,18 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
 
     def on_confirm_send(e):
         confirm_dialog = ft.BottomSheet(
-            on_dismiss=on_confirm_send,
             content=ft.Container(
-                adding=50,
+                padding=50,
                 content=ft.Column(
                 tight=True,
                 controls=[
-            title="Confirmar Envio",
-            content="Deseja realmente enviar as mensagens?",
-            actions=[
-                ft.BottomSheet(text="Cancelar", on_click=lambda e: confirm_dialog()),
-                ft.BottomSheet(text="Ok", on_click=lambda e: send_messages())
-            ]
-        )
-        page.add(confirm_dialog)
+                    ft.Text("Deseja iniciar os envios?"),
+                    ft.ElevatedButton("Close bottom sheet", on_click=lambda _: page.close(confirm_dialog)),
+                ],
+            ),
+        ),
+    )
+        page.add(ft.ElevatedButton("Display bottom sheet", on_click=lambda _: page.open(confirm_dialog)))
 
     def send_messages():
         # Implementar a lógica de envio das mensagens aqui
@@ -118,7 +116,6 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
 
     save_button = ft.ElevatedButton(text="Salvar", on_click=on_save_click)
     send_button = ft.ElevatedButton(text="Enviar", on_click=on_confirm_send)
-
     page.add(mensagem_input, mensagem_input2, save_button, send_button)
 
 # Função principal que inicia a aplicação Flet
