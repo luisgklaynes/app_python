@@ -57,6 +57,7 @@ def show_loading_screen(page: ft.Page):
     df = read_excel_sheet(file_path)
     time.sleep(3)  
     page.remove(loading_screen)
+    page.padding= ft.padding.all(35)
     show_main_content(page, df)
 
 # Função para mostrar o conteúdo principal (interface de edição de mensagens)
@@ -68,31 +69,7 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
         first_value_mensagem = "Nenhum dado disponível"
         first_value_mensagem2 = "Nenhum dado disponível"
 
-    page.title = "Editor de Mensagens"
-    mensagem_input = ft.TextField(
-        label="Editar mensagem", 
-        value=first_value_mensagem,
-        bgcolor=ft.colors.BLUE_GREY_800,
-        color=ft.colors.WHITE,
-        label_style=ft.TextStyle(color=ft.colors.GREEN_ACCENT_700),
-        border_color=ft.colors.GREEN_ACCENT_700,
-        multiline=True
-    )
-    mensagem_input2 = ft.TextField(
-        label="Editar mensagem 2", 
-        value=first_value_mensagem2,
-        bgcolor=ft.colors.BLUE_GREY_800,
-        color=ft.colors.WHITE,
-        label_style=ft.TextStyle(color=ft.colors.GREEN_ACCENT_700),
-        border_color=ft.colors.GREEN_ACCENT_700,
-        multiline=True,
-    )
-
-    file_path = 'contatosMay.xlsx'
-    sheet_name = 'Planilha1'
-
-
-# ação do botão salvar
+    # ação do botão salvar
     def on_save_click(e):
         try:
             updated_df = update_dataframe(df, mensagem_input.value, mensagem_input2.value)
@@ -122,69 +99,97 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
                     tight=True,
                     controls=[
                         ft.Text("Deseja iniciar os envios?", weight=ft.FontWeight.BOLD),
-                        ft.ElevatedButton(
-                            "Sim", 
-                            on_click=lambda _: [
-                                page.close(confirm_dialog),
-                                send_messages()  
-                            ]
-                        ),
-                        ft.ElevatedButton(
-                            "Cancelar", 
-                            on_click=lambda _: page.close(confirm_dialog)
-                        ),
+                        ft.Row([
+                            ft.ElevatedButton(
+                                "Sim", 
+                                on_click=lambda _: [
+                                    page.close(confirm_dialog),
+                                    send_messages()  
+                                ]
+                            ),
+                            ft.ElevatedButton(
+                                "Cancelar", 
+                                on_click=lambda _: page.close(confirm_dialog)
+                            ),
+                        ])
                     ],
                 ),
             ),
         )
         page.open(confirm_dialog)
 
+    # definição e estilização do campo mensagem 1
+    mensagem_input = ft.TextField(
+        label="Editar mensagem",
+        value=first_value_mensagem,
+        bgcolor=ft.colors.BLUE_GREY_700,
+        color=ft.colors.WHITE,
+        label_style=ft.TextStyle(color=ft.colors.GREEN_ACCENT_700),
+        border_color=ft.colors.GREEN_ACCENT_700,
+        multiline=True,   
+    )
+
+     # definição e estilização do campo mensagem 2
+    mensagem_input2 = ft.TextField(
+        label="Editar mensagem 2", 
+        value=first_value_mensagem2,
+        bgcolor=ft.colors.BLUE_GREY_700,
+        color=ft.colors.WHITE,
+        label_style=ft.TextStyle(color=ft.colors.GREEN_ACCENT_700),
+        border_color=ft.colors.GREEN_ACCENT_700,
+        multiline=True,
+    )
+
+    # Definição dos botões da tab "Mensagens"
     save_button = ft.ElevatedButton(text="Salvar", on_click=on_save_click,)
     send_button = ft.ElevatedButton(text="Enviar", on_click=on_confirm_send)
-    page.add(mensagem_input, mensagem_input2, save_button, send_button)
+    buttonsMensagens = ft.Row([save_button,send_button])
+    container = ft.Container(content=ft.Column([mensagem_input,mensagem_input2,buttonsMensagens]))
+    container.margin=ft.margin.symmetric(20,5)
 
+    # estilização dos botões
+    save_button = ft.ButtonStyle(
+        
+    )
+
+    # estilização das abas / chamada dos campos de input
+    tabs = ft.Tabs(selected_index=0, 
+                   label_color=ft.colors.GREEN_ACCENT_700,
+                   indicator_color=ft.colors.GREEN_ACCENT_700, 
+                   unselected_label_color=ft.colors.WHITE30,
+                   overlay_color=ft.colors.BLUE_GREY_700, 
+                   divider_color=ft.colors.GREEN_ACCENT_700,
+                   divider_height=0.5,
+                              
+        tabs=[
+            ft.Tab(text="Mensagens",
+                   adaptive=True,
+                   content=container
+                   ),
+
+            ft.Tab(text="Contatos",
+                   adaptive=True,
+                   content=ft.Container(
+                        content=ft.Text(
+                            "Conteúdo da nova aba",
+                            color=ft.colors.WHITE70))),
+            ]
+    )   
+    
+    file_path = 'contatosMay.xlsx'
+    sheet_name = 'Planilha1'
+
+    page.add(tabs)
+    
 # Função principal que inicia a aplicação Flet
 def main(page: ft.Page):
+    page.title = "Editor de Mensagens"
     page.window_width = 375
     page.window_height = 667
     page.bgcolor = ft.colors.BLUE_GREY_900
-    tabs = ft.Tabs(
-        selected_index=0,
-        tabs = ft.Tabs(
-            selected_index=0,
-            tabs=[
-                ft.Tab(
-                    text="Home",
-                    content=ft.Container(
-                        content=ft.Text(
-                            "Bem-vindo à página inicial!",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.colors.WHITE
-                        ),
-                        alignment=ft.alignment.center,
-                    )
-                ),
-                ft.Tab(
-                    text="Nova Aba",
-                    content=ft.Container(
-                        content=ft.Text(
-                            "Conteúdo da nova aba",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.colors.WHITE
-                        ),
-                        alignment=ft.alignment.center,
-                    )
-                ),
-            ],
-            indicator_color=ft.colors.LIME_ACCENT_400,
-            unselected_label_color=ft.colors.WHITE70,
-            label_color=ft.colors.LIME_ACCENT_400,
-            overlay_color=ft.colors.BLUE_GREY_800,
-        )
-    )
-    page.add(tabs)
+
+   
+
     page.update()
     #page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
