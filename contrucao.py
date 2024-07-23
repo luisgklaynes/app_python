@@ -68,6 +68,48 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
     else:
         first_value_mensagem = "Nenhum dado disponível"
         first_value_mensagem2 = "Nenhum dado disponível"
+    
+    # realiza consulta das linhas do df   
+    lines = []
+    for l in df.iterrows():
+        rlines = ft.DataRow([
+                    ft.DataCell(
+                        ft.Text(l[1]['Nome'],color=ft.colors.YELLOW_500)),
+                    ft.DataCell(
+                        ft.Text(l[1]['Telefone'],color=ft.colors.WHITE))
+                    ])
+        lines.append(rlines)
+
+    # definição do datatable e faz ligação com as linhas ja definidas
+    contatos = ft.DataTable(
+        width=700,
+        #bgcolor=ft.colors.WHITE70,
+        border=ft.border.all(1, ft.colors.GREEN_ACCENT_700),
+        border_radius=1,
+        vertical_lines=ft.BorderSide(1, ft.colors.GREEN_ACCENT_700),
+        horizontal_lines=ft.BorderSide(1, ft.colors.GREEN_ACCENT_700),
+        sort_column_index=0,
+        sort_ascending=True,
+        heading_row_color=ft.colors.BLUE_GREY_700,
+        heading_row_height=35,
+        data_row_color={"hovered": "0x30FF0000"},
+        show_checkbox_column=True,
+        #ivider_thickness=0,
+        column_spacing=50,
+        columns=[
+                ft.DataColumn(
+                    ft.Text(
+                        df.columns[0],color=ft.colors.GREEN_ACCENT_700)
+                        #on_sort=lambda e: print(f"{e.column_index}, {e.ascending}"),
+                )
+                ,ft.DataColumn(
+                    ft.Text(
+                        df.columns[1],color=ft.colors.GREEN_ACCENT_700)
+                        #on_sort=lambda e: print(f"{e.column_index}, {e.ascending}")
+                )
+            ],
+        rows=lines
+    )
 
     # ação do botão salvar
     def on_save_click(e):
@@ -92,30 +134,10 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
 # modal de confirmação
     def on_confirm_send(e):
         #print(send_button.data)
-        confirm_dialog = ft.BottomSheet(
-            content=ft.Container(
-                padding=80,
-                content=ft.Column(
-                    tight=True,
-                    controls=[
-                        ft.Text("Deseja iniciar os envios?", weight=ft.FontWeight.BOLD),
-                        ft.Row([
-                            ft.ElevatedButton(
-                                "Sim", 
-                                on_click=lambda _: [
-                                    page.close(confirm_dialog),
-                                    send_messages()  
-                                ]
-                            ),
-                            ft.ElevatedButton(
-                                "Cancelar", 
-                                on_click=lambda _: page.close(confirm_dialog)
-                            ),
-                        ])
-                    ],
-                ),
-            ),
-        )
+        confirm_dialog = ft.BottomSheet(content=ft.Container(padding=80,content=ft.Column(tight=True,
+        controls=[ft.Text("Deseja iniciar os envios?", weight=ft.FontWeight.BOLD),
+        ft.Row([ft.ElevatedButton("Sim", on_click=lambda _: [page.close(confirm_dialog),send_messages()]),
+        ft.ElevatedButton("Cancelar",on_click=lambda _: page.close(confirm_dialog)),])],),),)
         page.open(confirm_dialog)
 
     # definição e estilização do campo mensagem 1
@@ -140,17 +162,23 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
         multiline=True,
     )
 
-    # Definição dos botões da tab "Mensagens"
+    # Definição dos botões e funcionalidades da tab "Mensagens"
     save_button = ft.ElevatedButton(text="Salvar", on_click=on_save_click,)
     send_button = ft.ElevatedButton(text="Enviar", on_click=on_confirm_send)
+    
+    # adiciona os dois botões em uma linha
     buttonsMensagens = ft.Row([save_button,send_button])
+    
+    # adiciona os campos de imput em uma coluna/container
     container = ft.Container(content=ft.Column([mensagem_input,mensagem_input2,buttonsMensagens]))
     container.margin=ft.margin.symmetric(20,5)
+    
+    # adiciona o datatable em um container
+    containerContatos = ft.Container(content=contatos)
+    containerContatos.margin=ft.margin.symmetric(20,5)
 
     # estilização dos botões
-    save_button = ft.ButtonStyle(
-        
-    )
+    save_button = ft.ButtonStyle()
 
     # estilização das abas / chamada dos campos de input
     tabs = ft.Tabs(selected_index=0, 
@@ -169,10 +197,7 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
 
             ft.Tab(text="Contatos",
                    adaptive=True,
-                   content=ft.Container(
-                        content=ft.Text(
-                            "Conteúdo da nova aba",
-                            color=ft.colors.WHITE70))),
+                   content=containerContatos),
             ]
     )   
     
@@ -183,17 +208,15 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
     
 # Função principal que inicia a aplicação Flet
 def main(page: ft.Page):
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.title = "Editor de Mensagens"
-    page.window_width = 375
+    page.window_width = 667
     page.window_height = 667
     page.bgcolor = ft.colors.BLUE_GREY_900
 
-   
-
     page.update()
-    #page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
-    # Exibe a tela de carregamento inicial
+# Exibe a tela de carregamento inicial
     show_loading_screen(page)
 
 # Iniciar a aplicação Flet
