@@ -1,0 +1,22 @@
+teste,55.0
+Macarrao,6.0
+teste,1.0
+mouse,199.0
+teste,1.0
+teste,9999.0
+novo,23.0
+teclado,150.0
+capaz,22.0
+capaz,556.0
+produto loco,5.0
+produto,2.0
+ttttt,2.0
+testeeeeee,1.0
+tessssss,2.0
+teste,22.0
+teste,22.0
+loucura,66.0
+teste,22.0
+testewww,1.0
+teste222,2.0
+teste,1.0
