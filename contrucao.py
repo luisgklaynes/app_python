@@ -1,6 +1,8 @@
+import os
 import flet as ft
 import pandas as pd
 import time
+from dotenv import load_dotenv
 
 #Função para ler o arquivo Excel
 def read_excel_sheet(file_path):
@@ -200,8 +202,8 @@ def show_main_content(page: ft.Page, df: pd.DataFrame):
                    content=containerContatos),
             ]
     )   
-    
-    file_path = 'contatosMay.xlsx'
+    load_dotenv()
+    file_path = os.getenv('EXCEL_DB_PATH')
     sheet_name = 'Planilha1'
 
     page.add(tabs)
